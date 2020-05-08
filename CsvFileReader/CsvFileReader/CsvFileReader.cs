@@ -37,6 +37,8 @@ namespace CsvFileReader
             }
             else
             {
+                CsvReader.Read();
+                CsvReader.ReadHeader();
                 CsvReader.Configuration.HasHeaderRecord = false;
             }
         }

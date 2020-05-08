@@ -12,24 +12,7 @@ namespace CsvFileReaderTests
     public class CsvFileReaderTests
     {
         [TestMethod]
-        public void ReadFromFileWithoutHeaders()
-        {
-            var reader = new StreamReader("persons.csv");
-            CsvFileReader<Person> csvFileReader = new CsvFileReader<Person>(reader, false);
-            List<string> expectedResult = new List<string>()
-            {
-                "John",
-                "Doe",
-                "12"
-            };
-
-            var actualResult = csvFileReader.ReadValues();
-
-            Assert.IsTrue(expectedResult.SequenceEqual(actualResult));
-        }
-
-        [TestMethod]
-        public void ReadFromFileWithHeaders_NoHeadersPassed()
+        public void ReadFromFileWithHeaders_CallHeadersMethod_NoHeadersPassed()
         {
             var reader = new StreamReader("personsWithHeaders.csv");
             CsvFileReader<Person> csvFileReader = new CsvFileReader<Person>(reader, true);
@@ -48,7 +31,7 @@ namespace CsvFileReaderTests
         }
 
         [TestMethod]
-        public void ReadFromFileWithHeaders_ValidHeadersPassed()
+        public void ReadFromFileWithHeaders_CallHeadersMethod_ValidHeadersPassed()
         {
             var reader = new StreamReader("personsWithHeaders.csv");
 
@@ -75,7 +58,7 @@ namespace CsvFileReaderTests
         }
 
         [TestMethod]
-        public void ReadFromFileWithHeaders_CallNoHeadersMethod()
+        public void ReadFromFileWithHeaders_CallNoHeadersMethod_HeadersRequired()
         {
             var reader = new StreamReader("personsWithHeaders.csv");
             CsvFileReader<Person> csvFileReader = new CsvFileReader<Person>(reader, true);
@@ -93,12 +76,65 @@ namespace CsvFileReaderTests
         }
 
         [TestMethod]
-        public void ReadFromFileWithoutHeaders_CallHeadersMethod()
+        public void ReadFromFileWithHeaders_CallNoHeadersMethod_HeadersNotRequired()
+        {
+            var reader = new StreamReader("personsWithHeaders.csv");
+            CsvFileReader<Person> csvFileReader = new CsvFileReader<Person>(reader, false);
+
+            string expectedResult = "This method can't be used if there are headers in file.";
+
+            try
+            {
+                var answer = csvFileReader.ReadValues();
+            }
+            catch (Exception e)
+            {
+                Assert.IsTrue(expectedResult.CompareTo(e.Message) == 0);
+            }
+        }
+
+        [TestMethod]
+        public void ReadFromFileWithoutHeaders_CallHeadersMethod_HeadersRequired()
         {
             var reader = new StreamReader("persons.csv");
             CsvFileReader<Person> csvFileReader = new CsvFileReader<Person>(reader, true);
 
             string expectedResult = "This method can't be used if there headers in file.";
+
+            try
+            {
+                var answer = csvFileReader.ReadRecord();
+            }
+            catch (Exception e)
+            {
+                Assert.IsTrue(expectedResult.CompareTo(e.Message) == 0);
+            }
+        }
+
+        [TestMethod]
+        public void ReadFromFileWithoutHeaders_CallHeadersMethod_HeadersNotRequired()
+        {
+            var reader = new StreamReader("persons.csv");
+            CsvFileReader<Person> csvFileReader = new CsvFileReader<Person>(reader, false);
+
+            string expectedResult = "This method can't be used if there are no headers in file.";
+
+            try
+            {
+                var answer = csvFileReader.ReadRecord();
+            }
+            catch (Exception e)
+            {
+                Assert.IsTrue(expectedResult.CompareTo(e.Message) == 0);
+            }
+        }
+
+        [TestMethod]
+        public void ReadFromFileWithoutHeaders_CallNoHeadersMethod_HeadersRequired()
+        {
+            var reader = new StreamReader("persons.csv");
+            CsvFileReader<Person> csvFileReader = new CsvFileReader<Person>(reader, true);
+            string expectedResult = "This method can't be used if there are headers in file.";
 
             try
             {
