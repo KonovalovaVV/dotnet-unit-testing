@@ -17,25 +17,6 @@ namespace CsvFileReader
             csvReader = new CsvReader(streamReader, CultureInfo.InvariantCulture);
             headers = ReadHeaders(headersRequired, passedHeaders);
         }
-
-        private List<string> ReadHeaders(bool headersRequired, List<string> headers = null)
-        {
-            csvReader.Read();
-            if (!csvReader.ReadHeader())
-            {
-                csvReader.Configuration.HasHeaderRecord = false;
-            }
-
-            if (headersRequired)
-            {
-                return headers ?? csvReader.Context.HeaderRecord.ToList();
-            }
-            else
-            {
-                csvReader.Configuration.HasHeaderRecord = false;
-                return null;
-            }
-        }
             
         public List<string> ReadValues()
         {
@@ -64,6 +45,25 @@ namespace CsvFileReader
             csvReader.Read();
 
             return headers.ToDictionary(column => column, column => csvReader.GetField(column));
+        }
+
+        private List<string> ReadHeaders(bool headersRequired, List<string> headers = null)
+        {
+            csvReader.Read();
+            if (!csvReader.ReadHeader())
+            {
+                csvReader.Configuration.HasHeaderRecord = false;
+            }
+
+            if (headersRequired)
+            {
+                return headers ?? csvReader.Context.HeaderRecord.ToList();
+            }
+            else
+            {
+                csvReader.Configuration.HasHeaderRecord = false;
+                return null;
+            }
         }
     }
 }

@@ -106,11 +106,11 @@ namespace CsvFileReaderTests
 
             try
             {
-                var answer = csvFileReader.ReadRecord();
+                csvFileReader.ReadRecord();
             }
             catch (Exception e)
             {
-                Assert.IsTrue(expectedResult.CompareTo(e.Message) == 0);
+                Assert.IsTrue(expectedResult == e.Message);
             }
         }
 
@@ -124,11 +124,11 @@ namespace CsvFileReaderTests
 
             try
             {
-                var answer = csvFileReader.ReadRecord();
+                csvFileReader.ReadRecord();
             }
             catch (Exception e)
             {
-                Assert.IsTrue(expectedResult.CompareTo(e.Message) == 0);
+                Assert.IsTrue(expectedResult == e.Message);
             }
         }
 
@@ -141,11 +141,11 @@ namespace CsvFileReaderTests
 
             try
             {
-                var answer = csvFileReader.ReadRecord();
+                csvFileReader.ReadRecord();
             }
             catch (Exception e)
             {
-                Assert.IsTrue(expectedResult.CompareTo(e.Message) == 0);
+                Assert.IsTrue(expectedResult == e.Message);
             }
         }
     }
