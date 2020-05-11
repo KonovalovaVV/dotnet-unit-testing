@@ -9,58 +9,49 @@ namespace CsvFileReader
 {
     public class CsvFileReader<T>
     {
-        private CsvReader CsvReader { get; set; }
+        private readonly CsvReader csvReader;
         private readonly List<string> headers;
 
-        public CsvFileReader(StreamReader streamReader, bool headersRequired, List<string> headers = null)
+        public CsvFileReader(StreamReader streamReader, bool headersRequired, List<string> passedHeaders = null)
         {
-            CsvReader = new CsvReader(streamReader, CultureInfo.InvariantCulture);
-            CsvReader.Configuration.HasHeaderRecord = true;
+            csvReader = new CsvReader(streamReader, CultureInfo.InvariantCulture);
+            headers = ReadHeaders(headersRequired, passedHeaders);
+        }
+
+        private List<string> ReadHeaders(bool headersRequired, List<string> headers = null)
+        {
+            csvReader.Read();
+            if (!csvReader.ReadHeader())
+            {
+                csvReader.Configuration.HasHeaderRecord = false;
+            }
 
             if (headersRequired)
             {
-                if (headers != null)
-                {
-                    this.headers = headers;
-                    CsvReader.Read();
-                    CsvReader.ReadHeader();
-                }
-                else
-                {
-                    CsvReader.Read();
-                    if (!CsvReader.ReadHeader())
-                    {
-                        CsvReader.Configuration.HasHeaderRecord = false;
-                    }
-                    this.headers = CsvReader.Context.HeaderRecord.ToList();
-                }
+                return headers ?? csvReader.Context.HeaderRecord.ToList();
             }
             else
             {
-                CsvReader.Read();
-                CsvReader.ReadHeader();
-                CsvReader.Configuration.HasHeaderRecord = false;
+                csvReader.Configuration.HasHeaderRecord = false;
+                return null;
             }
         }
-
-        public List<dynamic> ReadValues()
+            
+        public List<string> ReadValues()
         {
             if (headers != null)
             {
                 throw new Exception("This method can't be used if there are headers in file.");
             }
 
-            CsvReader.Read();
+            csvReader.Read();
 
-            T record = CsvReader.GetRecord<T>();
-            List<dynamic> values = new List<dynamic>();
+            var record = csvReader.GetRecord<T>();
 
-            foreach (var field in typeof(T).GetProperties())
-            {
-                values.Add(field.GetValue(record).ToString());
-            }
-
-            return values;
+            return typeof(T)
+                .GetProperties()
+                .Select(field => field.GetValue(record).ToString())
+                .ToList();
         }
 
         public Dictionary<string, string> ReadRecord()
@@ -70,16 +61,9 @@ namespace CsvFileReader
                 throw new Exception("This method can't be used if there are no headers in file.");
             }
 
-            Dictionary<string, string> values = new Dictionary<string, string>();
+            csvReader.Read();
 
-            CsvReader.Read();
-
-            foreach (var column in headers)
-            {
-                values.Add(column, CsvReader.GetField(column));
-            }
-
-            return values;
+            return headers.ToDictionary(column => column, column => csvReader.GetField(column));
         }
     }
 }

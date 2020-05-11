@@ -3,7 +3,6 @@ using CsvFileReader;
 using CsvFileReader.Test;
 using System.IO;
 using System.Collections.Generic;
-using System.Linq;
 using System;
 
 namespace CsvFileReaderTests
@@ -17,10 +16,12 @@ namespace CsvFileReaderTests
             var reader = new StreamReader("personsWithHeaders.csv");
             CsvFileReader<Person> csvFileReader = new CsvFileReader<Person>(reader, true);
 
-            Dictionary<string, string> expectedResult = new Dictionary<string, string>();
-            expectedResult.Add("FirstName", "John");
-            expectedResult.Add("LastName", "Doe");
-            expectedResult.Add("Age", "12");
+            var expectedResult = new Dictionary<string, string>
+            {
+                {"FirstName", "John"},
+                {"LastName", "Doe"},
+                {"Age", "12"}
+            };
 
             var actualResult = csvFileReader.ReadRecord();
 
@@ -35,7 +36,7 @@ namespace CsvFileReaderTests
         {
             var reader = new StreamReader("personsWithHeaders.csv");
 
-            List<string> headers = new List<string>()
+            List<string> headers = new List<string>
             {
                 "FirstName",
                 "LastName",
@@ -44,10 +45,12 @@ namespace CsvFileReaderTests
 
             CsvFileReader<Person> csvFileReader = new CsvFileReader<Person>(reader, true, headers);
 
-            Dictionary<string, string> expectedResult = new Dictionary<string, string>();
-            expectedResult.Add("FirstName", "John");
-            expectedResult.Add("LastName", "Doe");
-            expectedResult.Add("Age", "12");
+            var expectedResult = new Dictionary<string, string>
+            {
+                {"FirstName", "John"},
+                {"LastName", "Doe"},
+                {"Age", "12"}
+            };
 
             var actualResult = csvFileReader.ReadRecord();
 
@@ -67,11 +70,11 @@ namespace CsvFileReaderTests
 
             try
             {
-                var answer = csvFileReader.ReadValues();
+                csvFileReader.ReadValues();
             }
             catch (Exception e)
             {
-                Assert.IsTrue(expectedResult.CompareTo(e.Message) == 0);
+                Assert.IsTrue(expectedResult == e.Message);
             }
         }
 
@@ -85,11 +88,11 @@ namespace CsvFileReaderTests
 
             try
             {
-                var answer = csvFileReader.ReadValues();
+                csvFileReader.ReadValues();
             }
             catch (Exception e)
             {
-                Assert.IsTrue(expectedResult.CompareTo(e.Message) == 0);
+                Assert.IsTrue(expectedResult == e.Message);
             }
         }
 
